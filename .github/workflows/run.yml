@@ -1,0 +1,25 @@
+name: KOBIS Seat Bot
+
+on:
+  schedule:
+    # 한국 시간(KST) 오전 08:30은 UTC 기준 전날 23:30입니다.
+    - cron: '30 23 * * *'
+  workflow_dispatch: # 수동으로 실행해볼 수 있는 버튼을 만듭니다.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: |
+          pip install selenium
+      - name: Run script
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python main.py
