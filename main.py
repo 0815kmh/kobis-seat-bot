@@ -15,25 +15,26 @@ def get_kobis_seat_data():
     chrome_options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=chrome_options)
     
-    "https://www.kobis.or.kr/kobis/business/stat/boxs/findDailySeatTicketList.do?sSearchFrom=2026-02-01&curPage=1"
+    # [중요] 어제 날짜(2026-02-01) 데이터를 강제로 가져오도록 설정된 URL입니다.
+    test_url = "https://www.kobis.or.kr/kobis/business/stat/boxs/findDailySeatTicketList.do?sSearchFrom=2026-02-01&curPage=1"
     
     try:
-        driver.get(url)
-        # 테이블 데이터가 나타날 때까지 최대 15초 대기
+        print(f"🌐 사이트 접속 중: {test_url}")
+        driver.get(test_url)
+        
+        # 테이블이 나타날 때까지 최대 15초 대기
         WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "#tbody_0 tr"))
         )
-        time.sleep(5) # 추가 안정화 시간
+        time.sleep(5) 
         
         seat_data = []
         rows = driver.find_elements(By.CSS_SELECTOR, "#tbody_0 tr")
         
-        # 데이터가 있는지 확인
         if not rows or "데이터가 없습니다" in rows[0].text:
-            print("⚠️ 현재 사이트에 수집 가능한 데이터가 없습니다.")
+            print("⚠️ 수집 가능한 데이터가 없습니다.")
             return ""
 
-        # 상위 5개 추출
         for row in rows[:5]:
             cols = row.find_elements(By.TAG_NAME, "td")
             if len(cols) > 13:
@@ -46,14 +47,14 @@ def get_kobis_seat_data():
         return "\n".join(seat_data)
 
     except Exception as e:
-        print(f"❌ 데이터 수집 중 오류 발생: {e}")
+        print(f"❌ 오류 발생: {e}")
         return ""
     finally:
         driver.quit()
 
 def send_email(content):
     if not content or len(content.strip()) < 5:
-        print("ℹ️ 수집된 데이터가 유효하지 않아 메일을 보내지 않습니다.")
+        print("ℹ️ 데이터가 유효하지 않아 메일을 보내지 않습니다.")
         return
 
     msg = MIMEText(content)
@@ -70,8 +71,8 @@ def send_email(content):
         print(f"❌ 메일 발송 실패: {e}")
 
 if __name__ == "__main__":
-    print("🎬 데이터 수집 시작...")
+    print("🎬 테스트 수집 시작 (타겟: 2026-02-01)...")
     data = get_kobis_seat_data()
     print(f"📊 수집 결과:\n{data}")
     send_email(data)
-    print("🏁 모든 작업 완료!")
+    print("🏁 테스트 종료!")
