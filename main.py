@@ -15,7 +15,7 @@ def get_kobis_seat_data():
     chrome_options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=chrome_options)
     
-    url = "https://www.kobis.or.kr/kobis/business/stat/boxs/findDailySeatTicketList.do"
+    "https://www.kobis.or.kr/kobis/business/stat/boxs/findDailySeatTicketList.do?sSearchFrom=2026-02-01&curPage=1"
     
     try:
         driver.get(url)
